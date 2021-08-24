@@ -1,8 +1,18 @@
-import discord
 import os
+import discord
 import requests
 import json
 import random
+import schedule
+from datetime import datetime
+import pytz
+
+
+
+t = pytz.timezone('Asia/Kolkata') 
+datetime_ = datetime.now(t)
+time_asia = str(datetime_.strftime("%H:%M:%S"))
+print("Time:", datetime_.strftime("%H:%M:%S"))
 
 client = discord.Client()
 
@@ -36,5 +46,21 @@ async def on_message(message):
         embed.add_field(name=data[i]["title"], value= "[" +  string  + "](" + data[i]["link"] + ")", inline=False)
     await message.channel.send(embed=embed)
 
+def on_time():
+    data = get_status()
+    embed = discord.Embed(title="Apple Daily", description="Your daily source of Apple tech")
+    for i in range(3):
+        string = ""
+        for x in data[i]["description"]:
+            if(x == '.'):
+                break
+            else:
+                string += x
+        embed.add_field(name=data[i]["title"], value= "[" +  string  + "](" + data[i]["link"] + ")", inline=False)
+    print(embed)
 
-client.run("ODc5NzIxNjQwMTczNDAwMDY0.YST2nw.8fxbxlq6zPZamqZoNqC7mXgg-EI")
+schedule.every().day.at("23:45:00").do(on_time)
+
+my_secret = os.environ['TOKEN']
+client.run(os.getenv('TOKEN'))
+
